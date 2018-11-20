@@ -11,6 +11,7 @@ contract Insurance {
     }
 
     struct Bill {
+        uint id;
         string name;
         uint cost;
         bool isPayed;
@@ -33,9 +34,12 @@ contract Insurance {
     }
 
     function createBill(string _name, uint _cost) private {
-        uint id = bills.push(Bill(_name, _cost, false)) - 1;
-        billToOwner[id] = msg.sender;
         ownerBillCount[msg.sender]++;
+        uint id = ownerBillCount[msg.sender];
+        bills.push(Bill(id, _name, _cost, false));
+        billToOwner[id] = msg.sender;
+
+
         emit NewBill(id, _name, _cost, false);
     }
 }

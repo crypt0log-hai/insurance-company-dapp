@@ -74,11 +74,10 @@ App = {
 
       for (var i = 0; i < billCount; i++) {
         insuranceInstance.bills(i).then(function(bill){
-          var temp = i-1;
-          var id = temp;
-          var name = bill[0];
-          var cost = bill[1];
-          var isPayed = bill[2];
+          var id = bill[0];
+          var name = bill[1];
+          var cost = bill[2];
+          var isPayed = bill[3];
 
           //Render candidate billResults
           var billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + cost + "</td><td>" + isPayed + "</td></tr>";
@@ -114,6 +113,8 @@ App = {
   }
 
 };
+
+
 
 $(function() {
   $(window).load(function() {
