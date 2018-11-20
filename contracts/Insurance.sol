@@ -20,6 +20,8 @@ contract Insurance {
     mapping (uint => address) public billToOwner;
     mapping (address => Client) public clients;
     mapping (address => uint) public ownerBillCount;
+    //store bills that have been payed
+    mapping(uint => bool) public billToPay;
 
     Bill[] public bills;
 
@@ -39,7 +41,23 @@ contract Insurance {
         bills.push(Bill(id, _name, _cost, false));
         billToOwner[id] = msg.sender;
 
-
         emit NewBill(id, _name, _cost, false);
+    }
+
+    function payBill(uint _billId) public {
+      //require that the bill belongs to the client
+      require(billToOwner[_billId] == msg.sender);
+
+      //require a valid bill
+      require(_billId > 0 && _billId <= ownerBillCount[msg.sender]);
+      //record that client has payed
+
+      require(billToPay[_billId] == false);
+      billToPay[_billId] = true;
+      bills[_billId].isPayed =   billToPay[_billId];
+
+      clients[msg.sender].count = clients[msg.sender].count + bills[_billId].cost;
+
+      //update client count
     }
 }

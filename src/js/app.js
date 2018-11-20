@@ -60,8 +60,10 @@ App = {
       var franchise = client[1];
       var count = client[2];
       var clientTemplate = "<tr><th>" + name + "</th><td>" + franchise + "</td><td>" + count + "</td></tr>";
-
       clientResult.append(clientTemplate);
+
+
+
     });
 
     //Load contract bil data
@@ -71,6 +73,9 @@ App = {
     }).then(function(billCount) {
       var billResults = $("#billResults");
       billResults.empty();
+
+      var billSelect = $("#billSelect");
+      billSelect.empty();
 
       for (var i = 0; i < billCount; i++) {
         insuranceInstance.bills(i).then(function(bill){
@@ -82,13 +87,32 @@ App = {
           //Render candidate billResults
           var billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + cost + "</td><td>" + isPayed + "</td></tr>";
           billResults.append(billTemplate);
+
+          var billOption = "<option value='" + id + "'>" + name + "</ option>"
+          if(isPayed == false) {
+            billSelect.append(billOption);
+          }
         });
       }
-
       loader.hide();
       content.show();
     }).catch(function(error) {
       console.warn(error);
+    });
+  },
+
+  payBill: function() {
+    var billId = $("#billSelect").val();
+
+    App.contracts.Insurance.deployed().then(function(instance) {
+      instanceInsurance = instance;
+      return instance.payBill(billId, {from: App.account});
+    }).then(function(result) {
+      // Wait for votes to update
+      $("#content").hide();
+      $("#loader").show();
+    }).catch(function(err) {
+      console.error(err);
     });
   },
 
