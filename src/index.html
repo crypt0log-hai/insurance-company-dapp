@@ -21,6 +21,7 @@
             <p class="text-center">Loading...</p>
           </div>
           <div id="content" style="display: none;">
+            <p id="accountAddress" class="text-center"></p>
             <h2>Client Account</h2>
             <table class="table">
               <thead>
@@ -49,8 +50,9 @@
               </tbody>
             </table>
             <hr/>
-            <form onSubmit="App.payBill(); return false;">
+            <form onSubmit="App.pay(); return false;">
               <div class="form-group">
+                <h2>Pay a bill</h2>
                 <label for="billSelect">Select a bill to pay</label>
                 <select class="form-control" id="billSelect">
                 </select>
@@ -58,8 +60,19 @@
               <button type="submit" class="btn btn-primary">Pay</button>
               <hr />
             </form>
+
+            <form onSubmit="App.addBill(); return false;">
+              <div class="form-group">
+                <h2>Add a new bill</h2>
+                <label for="billname">Bill Name</label>
+                <input id="billName" type="text" name="" value="">
+                <label for="costname">Cost Name</label>
+                <input id="costName" type="text" name="costname" value="">
+              </div>
+              <button type="submit" class="btn btn-primary">Add</button>
+              <hr />
+            </form>
             <hr>
-            <p id="accountAddress" class="text-center"></p>
           </div>
         </div>
       </div>

@@ -13,12 +13,15 @@ App = {
       web3 = new Web3(web3.currentProvider);
     } else {
       // Specify default instance if no web3 instance provided
-      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
       web3 = new Web3(App.web3Provider);
     }
 
     return App.initContract();
+
   },
+
+
 
   initContract: function() {
     $.getJSON("Insurance.json", function(insurance) {
@@ -27,8 +30,31 @@ App = {
       // Connect provider to interact with contract
       App.contracts.Insurance.setProvider(App.web3Provider);
 
+
       return App.render();
     });
+  },
+
+  bindEvents: function() {
+    App.contracts.Insurance.deployed().then(function(instance) {
+      instance.PayedEvent({}, {
+        fromBlock:'0',
+        toBlock: 'latest'
+      }).watch(function(error, event) {
+        console.log("event triggered, bill payed", event);
+      });
+    });
+
+    App.contracts.Insurance.deployed().then(function(instance) {
+      instance.AddedBill({}, {
+        fromBlock: 0,
+        toBlock: 'latest'
+      }).watch(function(error, event) {
+        console.log("event triggered, bill added", event);
+      });
+    });
+
+    App.render();
   },
 
   render: function() {
@@ -54,7 +80,6 @@ App = {
     }).then(function(client) {
       var clientResult = $("#clientResult");
       clientResult.empty();
-      console.log(client[1]);
 
       var name = client[0];
       var franchise = client[1];
@@ -85,7 +110,7 @@ App = {
           var isPayed = bill[3];
 
           //Render candidate billResults
-          var billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + cost + "</td><td>" + isPayed + "</td></tr>";
+          var billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + cost + "</td><td>" + isPayed + '</td><td><button type="submit" class="btn btn-primary">Pay</button></td></tr>';
           billResults.append(billTemplate);
 
           var billOption = "<option value='" + id + "'>" + name + "</ option>"
@@ -101,12 +126,46 @@ App = {
     });
   },
 
-  payBill: function() {
+  pay: function() {
     var billId = $("#billSelect").val();
+    App.contracts.Insurance.deployed().then(function(instance) {
+      insuranceInstance = instance;
+      return insuranceInstance.bills(billId);
+    }).then(function(bill) {
+      console.log(bill);
+      App.payBill(billId, bill[2]);
+    }).catch(function(error) {
+      console.warn(error);
+    });
+  },
+
+  payBill: function(billId, cost) {
+    console.log("here");
+    App.contracts.Insurance.deployed().then(function(instance) {
+        console.log("here2");
+      instanceInsurance = instance;
+      return instanceInsurance.payBill(billId, {
+        value: web3.toWei(cost, 'ether'),
+        from: App.account});
+    }).then(function(result) {
+          console.log("here3");
+      // Wait for votes to update
+      $("#content").hide();
+      $("#loader").show();
+    }).catch(function(err) {
+      console.error(err);
+    });
+
+  },
+
+
+  addBill: function() {
+    var billName = $("#billName").val();
+    var billCost = $("#costName").val();
 
     App.contracts.Insurance.deployed().then(function(instance) {
       instanceInsurance = instance;
-      return instance.payBill(billId, {from: App.account});
+      return instance.addBill(billName, billCost, {from: App.account});
     }).then(function(result) {
       // Wait for votes to update
       $("#content").hide();
@@ -114,26 +173,6 @@ App = {
     }).catch(function(err) {
       console.error(err);
     });
-  },
-
-  bindEvents: function() {
-    $(document).on('click', '.btn-adopt', App.handleAdopt);
-  },
-
-  markAdopted: function(adopters, account) {
-    /*
-     * Replace me...
-     */
-  },
-
-  handleAdopt: function(event) {
-    event.preventDefault();
-
-    var petId = parseInt($(event.target).data('id'));
-
-    /*
-     * Replace me...
-     */
   }
 
 };
