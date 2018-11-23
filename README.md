@@ -25,13 +25,16 @@ And install dependecies
 ```bash
 npm install
 ```
-
-
-Launch Ganache
+Launch Ganache and then you have to deployed the contract :
 
 Go the project folder and launch
+```bash
+truffle migrate --reset
+```
+Then to launch the project
 
 ```bash
 npm run dev
 ```
-Connect with you metamask account on your browser
+
+Connect with you metamask account on your browser for interacting with the project.

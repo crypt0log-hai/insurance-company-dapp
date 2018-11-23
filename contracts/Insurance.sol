@@ -44,10 +44,8 @@ contract Insurance {
 
     constructor() public payable {
         createClient("Luca Srdjenovic", 10);
-        createBill("Dentiste", 2);
-        createBill("Medecin", 4);
-
-        address(this).transfer(msg.value);
+        createBill("Dentiste", 20);
+        createBill("Medecin", 5);
     }
 
     function createClient(string _name, uint _franchise) private {
