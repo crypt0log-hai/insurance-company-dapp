@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Insurance company</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container" style="width: 650px;">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="text-center">Project PA - Insurance company</h1>
+          <hr/>
+          <br/>
+          <div id="loader">
+            <center><img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif"></center>
+            <p class="text-center">Loading...</p>
+          </div>
+          <div id="content" style="display: none;">
+            <p id="accountAddress" class="text-center"></p>
+            <h2>Client Account</h2>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Franchise</th>
+                  <th scope="col">Décompte</th>
+                </tr>
+              </thead>
+              <tbody id="clientResult">
+              </tbody>
+            </table>
+            <hr>
+            <h2>Client bills</h2>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Cost</th>
+                  <th scope="col">Is payed</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody id="billResults">
+              </tbody>
+            </table>
+            <hr/>
+            <form onSubmit="App.pay(); return false;">
+              <div class="form-group">
+                <h2>Pay a bill</h2>
+                <label for="billSelect">Select a bill to pay</label>
+                <select class="form-control" id="billSelect">
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Pay</button>
+              <hr />
+            </form>
+
+            <form onSubmit="App.addBill(); return false;">
+              <div class="form-group">
+                <h2>Add a new bill</h2>
+                <label for="billname">Bill Name</label>
+                <input id="billName" type="text" name="" value="">
+                <label for="costname">Cost Name</label>
+                <input id="costName" type="text" name="costname" value="">
+              </div>
+              <button type="submit" class="btn btn-primary">Add</button>
+              <hr />
+            </form>
+            <hr>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
