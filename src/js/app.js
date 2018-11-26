@@ -84,7 +84,7 @@ App = {
       var name = client[0];
       var franchise = client[1];
       var count = client[2];
-      var clientTemplate = "<tr><th>" + name + "</th><td>" + franchise + "</td><td>" + count + "</td></tr>";
+      var clientTemplate = "<tr><td>" + name + '</td><td id="franchise">' + franchise + '</td><td id="count">' + count + "</td></tr>";
       clientResult.append(clientTemplate);
 
 
@@ -103,7 +103,9 @@ App = {
       billSelect.empty();
 
       for (var i = 0; i < billCount; i++) {
-        insuranceInstance.bills(i).then(function(bill){
+        insuranceInstance.ownerToBills(App.account, i).then(function(bill){
+        //insuranceInstance.bills(i).then(function(bill){
+
           var id = bill[0];
           var name = bill[1];
           var cost = bill[2];
@@ -126,11 +128,29 @@ App = {
     });
   },
 
-  pay: function() {
-    var billId = $("#billSelect").val();
+  createClient: function() {
+    var clientName = $("#clientName").val();
+    var clientFranchise = $("#clientFranchise").val();
+
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
-      return insuranceInstance.bills(billId);
+      return insuranceInstance.createClient(clientName, clientFranchise);
+    }).then(function(result) {
+      console.log("Client created");
+    }).catch(function(error) {
+      console.warn(error);
+    });
+  },
+
+  pay: function() {
+    var billId = $("#billSelect").val();
+    var franchise = $("#franchise").val();
+    var count = $("#count").val();
+    console.log("count" + count);
+
+    App.contracts.Insurance.deployed().then(function(instance) {
+      insuranceInstance = instance;
+      return insuranceInstance.ownerToBills(App.account, billId);
     }).then(function(bill) {
       console.log(bill);
       App.payBill(billId, bill[2]);
@@ -146,9 +166,10 @@ App = {
       instanceInsurance = instance;
       return instanceInsurance.payBill(billId, {
         value: web3.toWei(cost, 'ether'),
-        from: App.account});
+        from: App.account
+      });
     }).then(function(result) {
-          console.log("here3");
+          console.log("here");
       // Wait for votes to update
       $("#content").hide();
       $("#loader").show();

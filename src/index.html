@@ -35,6 +35,20 @@
               </tbody>
             </table>
             <hr>
+
+            <form onSubmit="App.createClient(); return false;">
+              <div class="form-group">
+                <h2>Create a client</h2>
+                <label for="clientName">Client Name</label>
+                <input id="clientName" type="text" name="" value="">
+                <label for="clientFranchise">Client Franchise</label>
+                <input id="clientFranchise" type="text" name="costname" value="">
+                <button type="submit" class="btn btn-primary">Create</button>
+              </div>
+
+            </form>
+
+            <hr>
             <h2>Client bills</h2>
             <table class="table">
               <thead>
@@ -50,6 +64,7 @@
               </tbody>
             </table>
             <hr/>
+
             <form onSubmit="App.pay(); return false;">
               <div class="form-group">
                 <h2>Pay a bill</h2>

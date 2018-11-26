@@ -15,12 +15,13 @@ contract Insurance {
     event AddedBill(uint billId, string name, uint cost, bool isPayed);
     event PayedEvent(uint indexed billId);
 
-    uint convertToEther = 1 ether;
+    address owner;
 
     struct Client {
         string name;
         uint franchise;
         uint count; //Decompte
+        bool isReached;
     }
 
     struct Bill {
@@ -37,25 +38,27 @@ contract Insurance {
     mapping (uint => address) public billToOwner;
     mapping (address => Client) public clients;
     mapping (address => uint) public ownerBillCount;
+    mapping (address => Bill[]) public ownerToBills;
     //store bills that have been payed
     mapping(uint => bool) public billToPay;
 
-    Bill[] public bills;
+    //Bill[] public bills;
 
     constructor() public payable {
         createClient("Luca Srdjenovic", 10);
         createBill("Dentiste", 20);
         createBill("Medecin", 5);
+        owner = msg.sender;
     }
 
-    function createClient(string _name, uint _franchise) private {
-        clients[msg.sender] = Client(_name, _franchise, 0);
+    function createClient(string _name, uint _franchise) public {
+        clients[msg.sender] = Client(_name, _franchise, 0, false);
     }
 
     function createBill(string _name, uint _cost) private  {
         uint id = ownerBillCount[msg.sender];
         ownerBillCount[msg.sender]++;
-        bills.push(Bill(id, _name, _cost, false));
+        ownerToBills[msg.sender].push(Bill(id, _name, _cost, false));
         billToOwner[id] = msg.sender;
 
         emit AddedBill(id, _name, _cost, false);
@@ -68,21 +71,31 @@ contract Insurance {
       //require a valid bill
       require(_billId >= 0 && _billId <= ownerBillCount[msg.sender]);
       //record that client has payed
-
       require(billToPay[_billId] == false);
 
       billToPay[_billId] = true;
-      bills[_billId].isPayed =   billToPay[_billId];
+      ownerToBills[msg.sender][_billId].isPayed =   billToPay[_billId];
 
-      clients[msg.sender].count = clients[msg.sender].count + bills[_billId].cost;
+      uint rest = (clients[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - clients[msg.sender].franchise;
+      //uint memory test  =
 
-      //update client count
-      if(clients[msg.sender].count >= clients[msg.sender].franchise){
-        //l'assurance envoie l'argent
-        billToOwner[_billId].transfer(address(this).balance);
-      }else {
+      //Insurance  pay all the cost
+      if(clients[msg.sender].isReached == true)
+      {
+        billToOwner[_billId].transfer(ownerToBills[msg.sender][_billId].cost * 1 ether);
       }
 
+      //Insurance pay just the rest of the cost
+      if((clients[msg.sender].count+ownerToBills[msg.sender][_billId].cost) >= clients[msg.sender].franchise && clients[msg.sender].isReached == false){
+        clients[msg.sender].count = (clients[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - rest;
+        clients[msg.sender].isReached = true;
+        billToOwner[_billId].transfer(rest * 1 ether);
+      }
+
+      //insurance pay nothing
+      if(clients[msg.sender].count < clients[msg.sender].franchise && clients[msg.sender].count >= 0) {
+        clients[msg.sender].count = clients[msg.sender].count + ownerToBills[msg.sender][_billId].cost;
+      }
       //trigger billEvent
       emit PayedEvent(_billId);
     }
