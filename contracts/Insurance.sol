@@ -45,9 +45,9 @@ contract Insurance {
     //Bill[] public bills;
 
     constructor() public payable {
-        createClient("Luca Srdjenovic", (1 ether));
-        createBill("Dentiste", 1 ether);
-        createBill("Medecin", 5 ether);
+        createClient("Luca Srdjenovic", (0.0090168 ether) * 500);  // 500 frs
+        createBill("Dentiste", (0.0090168 ether) * 200);
+        createBill("Medecin", (0.0090168 ether) * 357.8);
         owner = msg.sender;
     }
 

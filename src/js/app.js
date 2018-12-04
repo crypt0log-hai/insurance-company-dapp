@@ -128,7 +128,7 @@ App = {
           var cost = Number((web3.fromWei(bill[2], 'ether').toFixed(6)));
 
           var isPayed = bill[3];
-          var costCHF = Number((cost * etherToCHF).toFixed(2));//https://www.coingecko.com/fr/graphiques_cours/ethereum/chf
+          var costCHF = Number((((cost * etherToCHF)/5).toFixed(2)* 5).toFixed(2));//https://www.coingecko.com/fr/graphiques_cours/ethereum/chf
 
           //Render candidate billResults
           var billTemplate = "";
