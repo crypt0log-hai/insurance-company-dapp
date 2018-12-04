@@ -3,6 +3,8 @@ var chfToEther = 0.0090168;
 // 1 ether = 116.63
 var etherToCHF = 110.90;
 
+var boolCreate = false;
+
 App = {
   web3Provider: null,
   contracts: {},
@@ -35,7 +37,6 @@ App = {
       // Connect provider to interact with contract
       App.contracts.Insurance.setProvider(App.web3Provider);
 
-
       return App.render();
     });
   },
@@ -66,6 +67,12 @@ App = {
     var insuranceInstance;
     var loader = $("#loader");
     var content = $("#content");
+    var contentClient = $("#contentClient");
+    var contentCreateClient = $("#contentCreateClient");
+    var contentBillList = $("#contentBillList");
+    var contentClientPay = $("#contentClientPay");
+    var contentAddBill = $("#contentAddBill");
+    var contentClientList = $("#contentClientList");
 
 
     loader.show();
@@ -76,42 +83,148 @@ App = {
       if(err === null) {
         App.account = account;
         $("#accountAddress").html("Your account -> " + account);
+        App.getBalance();
+
+        console.log(App.account);
+        if(App.account == '0x31a37df89d1789da93f4c661ead148b1c5644e10') {
+          // render for owner
+          console.log("account -> owner");
+          $('#title').html("Welcome Insurer");
+          contentBillList.hide();
+          contentClientPay.hide();
+          contentAddBill.hide();
+          contentClient.hide();
+
+          App.renderOwner();
+
+        } else if (App.account == '0x3600e0c2da8a936c970d3f9e08b693c984cfa68f') {
+          // render for the doctor
+          console.log("Account -> doctor");
+          $('#title').html("Welcome Doctor")
+          contentClient.hide();
+          contentCreateClient.hide();
+          contentBillList.hide();
+          contentClientPay.hide();
+          contentClientList.hide();
+
+          App.renderDoctor();
+
+
+
+        } else {
+          // render for the client
+          console.log("Account -> client");
+          $('#title').html("Welcome Insured");
+          contentCreateClient.hide();
+          contentAddBill.hide();
+          contentClientList.hide();
+
+          App.renderClient();
+        }
       }
     });
 
-    //Load contract client data
+
+
+    loader.hide();
+    content.show();
+  },
+
+  renderOwner: function() {
+
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
-      return insuranceInstance.clients(App.account);
+      return insuranceInstance.ownerClientCount(App.account);
+    }).then(function(clientCount) {
+      console.log("test");
+      var listClientResult = $("#listClientResult");
+      listClientResult.empty();
+      var y = 0;
+      for (var i = 0; i < clientCount; i++) {
+        insuranceInstance.clients(i).then(function(client){
+        var id = client[0];
+        var name = client[1];
+        var franchise = Number((web3.fromWei(client[2], 'ether').toFixed(6)));
+        var count = Number((web3.fromWei(client[3], 'ether').toFixed(6)));
+        var franchiseCHF = Number((franchise * etherToCHF).toFixed(0));
+        var countCHF = Number((count * etherToCHF).toFixed(2));
+
+        var isReached = client[4];
+
+        if(isReached == false){
+          var clientTemplate = "<tr><td id='idClient'>"  + id + '</td><td id="name">' + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td style='color:#FF0000';>Unreached</td></tr>";
+        } else {
+          var clientTemplate = "<tr><td id='idClient'>" + id + '</td><td id="name">' + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td style='color:#FF0000';>Unreached</td></tr>";
+        }
+
+        listClientResult.append(clientTemplate);
+        });
+
+      }
+
+    }).catch(function(error) {
+      console.warn(error);
+    });
+  },
+
+  renderDoctor: function() {
+
+    //Load client account
+    App.contracts.Insurance.deployed().then(function(instance) {
+      insuranceInstance = instance;
+      return insuranceInstance.ownerClientCount('0x31a37df89d1789da93f4c661ead148b1c5644e10');
+    }).then(function(clientCount) {
+      var clientSelect = $("#clientSelect");
+      clientSelect.empty();
+
+      for (var i = 0; i < clientCount; i++) {
+        insuranceInstance.clients(i).then(function(client){
+
+
+        var id = client[0];
+        var name = client[1];
+        insuranceInstance.clientToAddress(id).then(function(address)
+        {
+          console.log(address);
+          var billOption = "<option value='" + address + "'>" + name + "</ option>"
+          clientSelect.append(billOption);
+        });
+        });
+      }
+
+    }).catch(function(error) {
+      console.warn(error);
+    });
+
+  },
+
+
+  renderClient: function(){
+    console.log("test");
+    App.contracts.Insurance.deployed().then(function(instance) {
+      insuranceInstance = instance;
+      return insuranceInstance.clientAccounts(App.account);
     }).then(function(client) {
+      console.log(client);
       var clientResult = $("#clientResult");
       clientResult.empty();
 
       var name = client[0];
       var franchise = Number((web3.fromWei(client[1], 'ether').toFixed(6)));
       var count = Number((web3.fromWei(client[2], 'ether').toFixed(6)));
-
-
       var franchiseCHF = Number((franchise * etherToCHF).toFixed(0));
-
       var countCHF = Number((count * etherToCHF).toFixed(2));
-
-
-      //var walletCHF = Number((wallet * etherToCHF).toFixed(2));
 
       var clientTemplate = "<tr><td>" + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td id='wallet'>" + "</td></tr>";
       clientResult.append(clientTemplate);
 
-      App.getBalance();
-
-
-
     });
+
 
     //Load contract bil data
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
-      return insuranceInstance.ownerBillCount(App.account);
+      return insuranceInstance.clientBillCount(App.account);
     }).then(function(billCount) {
       var billResults = $("#billResults");
       billResults.empty();
@@ -145,8 +258,6 @@ App = {
             billResults.append(billTemplate);
         });
       }
-      loader.hide();
-      content.show();
     }).catch(function(error) {
       console.warn(error);
     });
@@ -155,16 +266,13 @@ App = {
   createClient: function() {
     var clientName = $("#clientName").val();
     var franchiseSelect = $("#franchiseSelect").val();
-    console.log(franchiseSelect);
-
-
-    // 1 chf = 0.0089 ether
+    var clientAddress = $("#clientAddress").val();
 
     franchiseSelect = franchiseSelect * chfToEther * Math.pow(10, 18);
 
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
-      return insuranceInstance.createClient(clientName, franchiseSelect);
+      return insuranceInstance.createClient(clientAddress, clientName, franchiseSelect);
     }).then(function(result) {
       console.log("Client created");
     }).catch(function(error) {
@@ -174,7 +282,6 @@ App = {
 
   pay: function() {
     var billId = $("#billSelect").val();
-
 
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
@@ -209,8 +316,8 @@ App = {
 
 
   addBill: function() {
-    var billName = $("#billName").val();
-    var billCost = $("#costName").val();
+    var billDate = $("#billDate").val();
+    var billCost = $("#billCost").val();
 
     // 1 chf = 0.0089 ether
     billCost = billCost * chfToEther * Math.pow(10, 18);
@@ -229,15 +336,12 @@ App = {
   },
 
   getBalance: function() {
-    var wallet = $("#wallet");
-    var wei, balance
 
     try {
         web3.eth.getBalance(App.account, function(error, wei) {
           if (!error) {
             var balance = web3.fromWei(wei, 'ether');
-            console.log(balance);
-            wallet.text(balance.toFixed(2));
+            $("#accountWallet").html("Your wallet -> " + balance.toFixed(2) + " ETH");
           }
         })
       ;
@@ -245,7 +349,6 @@ App = {
       console.error(err);
     };
   }
-
 };
 
 
