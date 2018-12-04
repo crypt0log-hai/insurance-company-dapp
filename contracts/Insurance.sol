@@ -45,9 +45,9 @@ contract Insurance {
     //Bill[] public bills;
 
     constructor() public payable {
-        createClient("Luca Srdjenovic", 10);
-        createBill("Dentiste", 20);
-        createBill("Medecin", 5);
+        createClient("Luca Srdjenovic", (1 ether));
+        createBill("Dentiste", 1 ether);
+        createBill("Medecin", 5 ether);
         owner = msg.sender;
     }
 
@@ -55,7 +55,7 @@ contract Insurance {
         clients[msg.sender] = Client(_name, _franchise, 0, false);
     }
 
-    function createBill(string _name, uint _cost) private  {
+    function createBill(string _name, uint _cost ) private  {
         uint id = ownerBillCount[msg.sender];
         ownerBillCount[msg.sender]++;
         ownerToBills[msg.sender].push(Bill(id, _name, _cost, false));
@@ -79,17 +79,17 @@ contract Insurance {
       uint rest = (clients[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - clients[msg.sender].franchise;
       //uint memory test  =
 
-      //Insurance  pay all the cost
+      //Insurance  pay 90 %
       if(clients[msg.sender].isReached == true)
       {
-        billToOwner[_billId].transfer(ownerToBills[msg.sender][_billId].cost * 1 ether);
+        billToOwner[_billId].transfer((ownerToBills[msg.sender][_billId].cost * 9) / 100);
       }
 
       //Insurance pay just the rest of the cost
       if((clients[msg.sender].count+ownerToBills[msg.sender][_billId].cost) >= clients[msg.sender].franchise && clients[msg.sender].isReached == false){
         clients[msg.sender].count = (clients[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - rest;
         clients[msg.sender].isReached = true;
-        billToOwner[_billId].transfer(rest * 1 ether);
+        billToOwner[_billId].transfer(rest);
       }
 
       //insurance pay nothing

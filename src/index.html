@@ -23,12 +23,17 @@
           <div id="content" style="display: none;">
             <p id="accountAddress" class="text-center"></p>
             <h2>Client Account</h2>
+
             <table class="table">
               <thead>
+
                 <tr>
                   <th scope="col">Name</th>
-                  <th scope="col">Franchise</th>
-                  <th scope="col">Décompte</th>
+                  <th scope="col">Franchise (CHF)</th>
+                  <th scope="col">Franchise (ETH)</th>
+                  <th scope="col">Décompte (CHF)</th>
+                  <th scope="col">Décompte (ETH)</th>
+                  <th scope="col">Wallet(ETH)</th>
                 </tr>
               </thead>
               <tbody id="clientResult">
@@ -39,10 +44,18 @@
             <form onSubmit="App.createClient(); return false;">
               <div class="form-group">
                 <h2>Create a client</h2>
-                <label for="clientName">Client Name</label>
+                <label for="clientName">Client Name : </label><br>
                 <input id="clientName" type="text" name="" value="">
-                <label for="clientFranchise">Client Franchise</label>
-                <input id="clientFranchise" type="text" name="costname" value="">
+                <hr>
+                <label for="franchiseSelect">Franchise amount</label>
+                <select class="form-control" id="franchiseSelect">
+                  <option value="500">500.-</option>
+                  <option value="1000">1000.-</option>
+                  <option value="1500">1500.-</option>
+                  <option value="2000">2000.-</option>
+                  <option value="2500">2500.-</option>
+                </select>
+                <hr>
                 <button type="submit" class="btn btn-primary">Create</button>
               </div>
 
@@ -55,9 +68,10 @@
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
-                  <th scope="col">Cost</th>
+                  <th scope="col">Cost (CHF)</th>
+                  <th scope="col">Cost (ETH)</th>
                   <th scope="col">Is payed</th>
-                  <th scope="col"></th>
+                  <th scope="col">Date</th>
                 </tr>
               </thead>
               <tbody id="billResults">
@@ -79,9 +93,10 @@
             <form onSubmit="App.addBill(); return false;">
               <div class="form-group">
                 <h2>Add a new bill</h2>
-                <label for="billname">Bill Name</label>
+                <label for="billname">Bill Name :</label>
                 <input id="billName" type="text" name="" value="">
-                <label for="costname">Cost Name</label>
+                <hr>
+                <label for="costname">Bill cost (CHF) :</label>
                 <input id="costName" type="text" name="costname" value="">
               </div>
               <button type="submit" class="btn btn-primary">Add</button>
