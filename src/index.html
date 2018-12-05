@@ -20,58 +20,129 @@
             <center><img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif"></center>
             <p class="text-center">Loading...</p>
           </div>
-          <div id="content" style="display: none;">
-            <p id="accountAddress" class="text-center"></p>
-            <h2>Client Account</h2>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Franchise</th>
-                  <th scope="col">Décompte</th>
-                </tr>
-              </thead>
-              <tbody id="clientResult">
-              </tbody>
-            </table>
-            <hr>
-            <h2>Client bills</h2>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Cost</th>
-                  <th scope="col">Is payed</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody id="billResults">
-              </tbody>
-            </table>
-            <hr/>
-            <form onSubmit="App.pay(); return false;">
-              <div class="form-group">
-                <h2>Pay a bill</h2>
-                <label for="billSelect">Select a bill to pay</label>
-                <select class="form-control" id="billSelect">
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary">Pay</button>
-              <hr />
-            </form>
+          <div id="content" style="display: none;" >
+            <p id="accountAddress"class="text-center"> </p> <br>
+            <p id="accountWallet" class="text-center" style="color:#0000FF";></p><br>
 
-            <form onSubmit="App.addBill(); return false;">
-              <div class="form-group">
-                <h2>Add a new bill</h2>
-                <label for="billname">Bill Name</label>
-                <input id="billName" type="text" name="" value="">
-                <label for="costname">Cost Name</label>
-                <input id="costName" type="text" name="costname" value="">
+            <h2 id="title"></h2>
+            <div id="contentClient">
+              <h2>Client Account</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Franchise (CHF)</th>
+                    <th scope="col">Franchise (ETH)</th>
+                    <th scope="col">Décompte (CHF)</th>
+                    <th scope="col">Décompte (ETH)</th>
+                  </tr>
+                </thead>
+                <tbody id="clientResult">
+                </tbody>
+              </table>
+            </div>
+
+            <hr>
+
+            <div id="contentClientList">
+              <h2>Liste of Client</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Franchise (CHF)</th>
+                    <th scope="col">Franchise (ETH)</th>
+                    <th scope="col">Décompte (CHF)</th>
+                    <th scope="col">Décompte (ETH)</th>
+                    <th scope="col">Is reached</th>
+                  </tr>
+                </thead>
+                <tbody id="listClientResult">
+                </tbody>
+              </table>
               </div>
-              <button type="submit" class="btn btn-primary">Add</button>
-              <hr />
-            </form>
+            </div>
+
+            <div id="contentCreateClient">
+              <form onSubmit="App.createClient(); return false;">
+                <div class="form-group">
+                  <h2>Create a client</h2>
+                  <label for="clientAddress">Client Adress : </label><br>
+                  <input id="clientAddress" type="text" name="" value="">
+                  <hr>
+
+                  <label for="clientName">Client Name : </label><br>
+                  <input id="clientName" type="text" name="" value="">
+                  <hr>
+                  <label for="franchiseSelect">Franchise amount</label>
+                  <select class="form-control" id="franchiseSelect">
+                    <option value="500">500.-</option>
+                    <option value="1000">1000.-</option>
+                    <option value="1500">1500.-</option>
+                    <option value="2000">2000.-</option>
+                    <option value="2500">2500.-</option>
+                  </select>
+                  <hr>
+                  <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+
+            <div id="contentBillList">
+              </form>
+              <h2>Client bills</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Cost (CHF)</th>
+                    <th scope="col">Cost (ETH)</th>
+                    <th scope="col">Is payed</th>
+                    <th scope="col">Date</th>
+                  </tr>
+                </thead>
+                <tbody id="billResults">
+                </tbody>
+              </table>
+              <hr/>
+            </div>
+
+            <div id="contentClientPay">
+              <form onSubmit="App.pay(); return false;">
+                <div class="form-group">
+                  <h2>Pay a bill</h2>
+                  <label for="billSelect">Select a bill to pay</label>
+                  <select class="form-control" id="billSelect">
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Pay</button>
+                <hr />
+              </form>
+            </div>
+
+
+            <div id="contentAddBill">
+
+
+              <form onSubmit="App.addBill(); return false;">
+                <div class="form-group">
+                  <h2>Add a new bill</h2>
+
+                  <label for="clientSelect">Select your patient</label>
+                  <select id="clientSelect" class="form-control" >
+                  </select>
+                  <br>
+                  <label for="billDate">Bill Date :</label>
+                  <input id="billDate" type="date" name="anniversaire">
+                  <hr>
+                  <label for="billCost">Bill cost (CHF) :</label>
+                  <input id="billCost" type="text" name="costname" value="">
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+                <hr />
+              </form>
+            </div>
             <hr>
           </div>
         </div>
