@@ -5,6 +5,8 @@ var etherToCHF = 110.90;
 
 var boolCreate = false;
 
+var loader = $("#loader");
+var content = $("#content");
 App = {
   web3Provider: null,
   contracts: {},
@@ -65,8 +67,7 @@ App = {
 
   render: function() {
     var insuranceInstance;
-    var loader = $("#loader");
-    var content = $("#content");
+
     var contentClient = $("#contentClient");
     var contentCreateClient = $("#contentCreateClient");
     var contentBillList = $("#contentBillList");
@@ -111,6 +112,7 @@ App = {
 
 
 
+
         } else {
           // render for the client
           console.log("Account -> client");
@@ -123,8 +125,6 @@ App = {
         }
       }
     });
-
-
 
     loader.hide();
     content.show();
@@ -139,29 +139,33 @@ App = {
       console.log("test");
       var listClientResult = $("#listClientResult");
       listClientResult.empty();
-      var y = 0;
       for (var i = 0; i < clientCount; i++) {
         insuranceInstance.clients(i).then(function(client){
+          console.log(client);
         var id = client[0];
         var name = client[1];
+        console.log(name);
         var franchise = Number((web3.fromWei(client[2], 'ether').toFixed(6)));
         var count = Number((web3.fromWei(client[3], 'ether').toFixed(6)));
+        console.log("count ->" + count);
         var franchiseCHF = Number((franchise * etherToCHF).toFixed(0));
         var countCHF = Number((count * etherToCHF).toFixed(2));
 
+
         var isReached = client[4];
+
+        console.log(isReached);
 
         if(isReached == false){
           var clientTemplate = "<tr><td id='idClient'>"  + id + '</td><td id="name">' + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td style='color:#FF0000';>Unreached</td></tr>";
         } else {
-          var clientTemplate = "<tr><td id='idClient'>" + id + '</td><td id="name">' + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td style='color:#FF0000';>Unreached</td></tr>";
+          var clientTemplate = "<tr><td id='idClient'>" + id + '</td><td id="name">' + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td style='color:#00FF00';>Reached</td></tr>";
         }
 
         listClientResult.append(clientTemplate);
         });
 
       }
-
     }).catch(function(error) {
       console.warn(error);
     });
@@ -191,7 +195,6 @@ App = {
         });
         });
       }
-
     }).catch(function(error) {
       console.warn(error);
     });
@@ -206,12 +209,12 @@ App = {
       return insuranceInstance.clientAccounts(App.account);
     }).then(function(client) {
       console.log(client);
-      var clientResult = $("#clientResult");
+                    var clientResult = $("#clientResult");
       clientResult.empty();
 
-      var name = client[0];
-      var franchise = Number((web3.fromWei(client[1], 'ether').toFixed(6)));
-      var count = Number((web3.fromWei(client[2], 'ether').toFixed(6)));
+      var name = client[1];
+      var franchise = Number((web3.fromWei(client[2], 'ether').toFixed(6)));
+      var count = Number((web3.fromWei(client[3], 'ether').toFixed(6)));
       var franchiseCHF = Number((franchise * etherToCHF).toFixed(0));
       var countCHF = Number((count * etherToCHF).toFixed(2));
 
@@ -295,9 +298,7 @@ App = {
   },
 
   payBill: function(billId, cost) {
-    console.log("here");
     App.contracts.Insurance.deployed().then(function(instance) {
-        console.log("here2");
       instanceInsurance = instance;
       return instanceInsurance.payBill(billId, {
         value: cost,
@@ -316,8 +317,10 @@ App = {
 
 
   addBill: function() {
+    var clientAddress = $("#clientSelect").val();
     var billDate = $("#billDate").val();
     var billCost = $("#billCost").val();
+    console.log(billDate);
 
     // 1 chf = 0.0089 ether
     billCost = billCost * chfToEther * Math.pow(10, 18);
@@ -325,7 +328,7 @@ App = {
 
     App.contracts.Insurance.deployed().then(function(instance) {
       instanceInsurance = instance;
-      return instance.addBill(billName, billCost, {from: App.account});
+      return instance.addBill(clientAddress, billDate, billCost, {from: App.account});
     }).then(function(result) {
       // Wait for votes to update
       $("#content").hide();

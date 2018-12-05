@@ -104,6 +104,9 @@ contract Insurance {
       if(clientAccounts[msg.sender].count < clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].count >= 0) {
         clientAccounts[msg.sender].count = clientAccounts[msg.sender].count + ownerToBills[msg.sender][_billId].cost;
       }
+
+      //
+      clients[clientAccounts[msg.sender].id] = clientAccounts[msg.sender];
       //trigger billEvent
       emit PayedEvent(_billId);
     }
