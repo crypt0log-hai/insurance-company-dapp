@@ -1,9 +1,7 @@
-var chfToEther = 0.0090168;
+var chfToEther = 0.010821339681852614;
 
 // 1 ether = 116.63
-var etherToCHF = 110.90;
-
-var boolCreate = false;
+var etherToCHF = 92.4;
 
 var loader = $("#loader");
 var content = $("#content");
@@ -139,6 +137,11 @@ App = {
       console.log("test");
       var listClientResult = $("#listClientResult");
       listClientResult.empty();
+
+      insuranceInstance.getContractBalance().then(function(balance) {
+        $("#contractWallet").html("Your contract Wallet --> " + web3.fromWei(balance, 'ether') + " ETH");
+      });
+
       for (var i = 0; i < clientCount; i++) {
         insuranceInstance.clients(i).then(function(client){
           console.log(client);
@@ -339,7 +342,6 @@ App = {
   },
 
   getBalance: function() {
-
     try {
         web3.eth.getBalance(App.account, function(error, wei) {
           if (!error) {

@@ -51,8 +51,9 @@ contract Insurance {
     mapping(address => uint) public ownerClientCount;
     Client[] public clients;
 
-    constructor() public payable {
+    constructor(address _doctor) public payable {
         owner = msg.sender;
+        doctor = _doctor;
     }
 
     function createClient(address _address, string _name, uint _franchise) public {
@@ -78,31 +79,48 @@ contract Insurance {
 
       //require a valid bill
       require(_billId >= 0 && _billId <= clientBillCount[msg.sender]);
-      //record that client has payed
+      //record that client has payed the bill
       require(billToPay[_billId] == false);
+
+
 
       billToPay[_billId] = true;
       ownerToBills[msg.sender][_billId].isPayed =   billToPay[_billId];
 
       uint rest = (clientAccounts[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - clientAccounts[msg.sender].franchise;
-      //uint memory test  =
+      uint clientToPay = ownerToBills[msg.sender][_billId].cost - rest;
 
-      //Insurance  pay 90 % to the doctor address
+      //Insurance transfer the cost bill to the doctor address
+      //doctor.transfer(ownerToBills[msg.sender][_billId].cost);
+
+      //Insurance  pay 90 % to the doctor address client has to pay 10 % for the insuranced
       if(clientAccounts[msg.sender].isReached == true)
       {
-        billToOwner[_billId].transfer((ownerToBills[msg.sender][_billId].cost * 9) / 100);
+        clientAccounts[msg.sender].count += (ownerToBills[msg.sender][_billId].cost * 10) / 100;
+
+        //Insurance transfer to client 90%
+        billToOwner[_billId].transfer((ownerToBills[msg.sender][_billId].cost * 90) / 100);
+
+        //Client pay to doctor 90% + 10% from himself
+        doctor.transfer(msg.value);
       }
 
-      //Insurance pay just the rest of the cost
+      //Insurance pay just the 90 % rest of the cost
       if((clientAccounts[msg.sender].count+ownerToBills[msg.sender][_billId].cost) >= clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].isReached == false){
-        clientAccounts[msg.sender].count = (clientAccounts[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - rest;
+        clientAccounts[msg.sender].count += clientToPay + ((rest*10)/100);
         clientAccounts[msg.sender].isReached = true;
-        billToOwner[_billId].transfer(rest);
+
+        //Insurance transfer 90% of the rest bill
+        billToOwner[_billId].transfer((rest * 90) / 100);
+
+        //Client pay to doctor 90% of the rest + 10% from rest himself
+        doctor.transfer(msg.value);
       }
 
       //insurance pay nothing
       if(clientAccounts[msg.sender].count < clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].count >= 0) {
         clientAccounts[msg.sender].count = clientAccounts[msg.sender].count + ownerToBills[msg.sender][_billId].cost;
+        doctor.transfer(msg.value);
       }
 
       //
@@ -113,6 +131,10 @@ contract Insurance {
 
     function addBill(address _address, string _name, uint _cost) public {
       createBill(_address, _name, _cost);
+    }
+
+    function getContractBalance() external view returns(uint) {
+      return address(this).balance;
     }
 
 
