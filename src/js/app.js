@@ -72,6 +72,7 @@ App = {
     var contentClientPay = $("#contentClientPay");
     var contentAddBill = $("#contentAddBill");
     var contentClientList = $("#contentClientList");
+    var contentDoctorBill = $("#contentDoctorBill");
 
 
     loader.show();
@@ -93,6 +94,7 @@ App = {
           contentClientPay.hide();
           contentAddBill.hide();
           contentClient.hide();
+          contentDoctorBill.hide();
 
           App.renderOwner();
 
@@ -118,6 +120,7 @@ App = {
           contentCreateClient.hide();
           contentAddBill.hide();
           contentClientList.hide();
+          contentDoctorBill.hide();
 
           App.renderClient();
         }
@@ -138,8 +141,12 @@ App = {
       var listClientResult = $("#listClientResult");
       listClientResult.empty();
 
+      insuranceInstance.getPreviousState().then(function(previousState) {
+        $("#previousWallet").html("previous contract Wallet --> " + web3.fromWei(previousState, 'ether') + " ETH");
+      });
+
       insuranceInstance.getContractBalance().then(function(balance) {
-        $("#contractWallet").html("Your contract Wallet --> " + web3.fromWei(balance, 'ether') + " ETH");
+        $("#contractWallet").html("Current contract Wallet --> " + web3.fromWei(balance, 'ether') + " ETH");
       });
 
       for (var i = 0; i < clientCount; i++) {
@@ -227,7 +234,7 @@ App = {
     });
 
 
-    //Load contract bil data
+    //Load contract bill data
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
       return insuranceInstance.clientBillCount(App.account);
@@ -247,6 +254,16 @@ App = {
           var cost = Number((web3.fromWei(bill[2], 'ether').toFixed(6)));
 
           var isPayed = bill[3];
+
+
+          var payByInsurance = Number((web3.fromWei(bill[4], 'ether').toFixed(6)));
+          var payByClient = Number((web3.fromWei(bill[5], 'ether').toFixed(6)));
+
+          console.log(payByClient);
+
+          var payByClientCHF = Number((((payByClient * etherToCHF)/5).toFixed(2)* 5).toFixed(2));
+
+          var payByInsuranceCHF = Number((((payByInsurance * etherToCHF)/5).toFixed(2)* 5).toFixed(2));
           var costCHF = Number((((cost * etherToCHF)/5).toFixed(2)* 5).toFixed(2));//https://www.coingecko.com/fr/graphiques_cours/ethereum/chf
 
           //Render candidate billResults
@@ -256,10 +273,10 @@ App = {
 
           var billOption = "<option value='" + id + "'>" + name + "</ option>"
           if(isPayed == false) {
-            billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + costCHF + "</td><td>" + cost + "</td><td><font color='red'>Unpayed</font></td><td>";
+            billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + costCHF + "</td><td>" + cost + "</td><td><font color='red'>Unpayed</font></td><td>" + payByClientCHF + " <strong>CHF</strong>" + "</td><td>" + payByInsuranceCHF + "CHF" + "</td><td>";
             billSelect.append(billOption);
           } else {
-            billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + costCHF + "</td><td>" + cost + "</td><td><font color='green'>Payed</font></td></tr>";
+            billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + costCHF + "</td><td>" + cost + "</td><td><font color='green'>Payed</font></td><td>" + payByClientCHF + " <strong>CHF</strong>"     + "</td><td>" + payByInsuranceCHF + "CHF" + "</td><td>";
           }
             billResults.append(billTemplate);
         });
@@ -296,6 +313,7 @@ App = {
       console.log(bill);
       App.payBill(billId, bill[2]);
     }).catch(function(error) {
+      console.log("error");
       console.warn(error);
     });
   },
@@ -308,11 +326,11 @@ App = {
         from: App.account
       });
     }).then(function(result) {
-          console.log("here");
       // Wait for votes to update
       $("#content").hide();
       $("#loader").show();
     }).catch(function(err) {
+      console.log(cost);
       console.error(err);
     });
 
@@ -353,6 +371,50 @@ App = {
     } catch (err) {
       console.error(err);
     };
+  },
+
+  showClientBill() {
+    var clientAddress = $("#clientSelect").val();
+
+    var clientBillResult = $("#clientBillResult");
+    clientBillResult.empty();
+
+    //Load contract bill data
+    App.contracts.Insurance.deployed().then(function(instance) {
+      insuranceInstance = instance;
+      return insuranceInstance.clientBillCount(clientAddress);
+    }).then(function(billCount) {
+      for (var i = 0; i < billCount; i++) {
+        insuranceInstance.ownerToBills(clientAddress, i).then(function(bill){
+        //insuranceInstance.bills(i).then(function(bill){
+
+          var id = bill[0];
+          var name = bill[1];
+          var cost = Number((web3.fromWei(bill[2], 'ether').toFixed(6)));
+
+          var isPayed = bill[3];
+
+
+
+          var costCHF = Number((((cost * etherToCHF)/5).toFixed(2)* 5).toFixed(2));//https://www.coingecko.com/fr/graphiques_cours/ethereum/chf
+
+          //Render candidate billResults
+          var billTemplate = "";
+
+
+
+          if(isPayed == false) {
+            billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + costCHF + "</td><td>" + cost + "</td><td><font color='red'>Unpayed</font>" + "</td></tr>";
+          } else {
+            billTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + costCHF + "</td><td>" + cost + "</td><td><font color='green'>Payed</font></td><td>" + "</td></tr>";
+          }
+            clientBillResult.append(billTemplate);
+        });
+      }
+    }).catch(function(error) {
+      console.warn(error);
+    });
+
   }
 };
 

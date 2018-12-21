@@ -23,6 +23,7 @@
           <div id="content" style="display: none;" >
             <p id="accountAddress"class="text-center"> </p> <br>
             <p id="accountWallet" class="text-center" style="color:#0000FF";></p><br>
+            <p id="previousWallet" class="text-center" style="color:#0000FF";></p><br>
             <p id="contractWallet" class="text-center" style="color:#0000FF";></p><br>
             <div class="jumbotron">
                 <h1 id="title"></h1>
@@ -102,6 +103,8 @@
                     <th scope="col">Cost (CHF)</th>
                     <th scope="col">Cost (ETH)</th>
                     <th scope="col">Is payed</th>
+                    <th scope="col">Payed by you</th>
+                    <th scope="col">Payed by insurance</th>
                   </tr>
                 </thead>
                 <tbody id="billResults">
@@ -123,10 +126,30 @@
               </form>
             </div>
 
+            <div id="contentDoctorBill">
+              <form onSubmit="App.showClientBill(); return false;">
+                <div class="form-group">
+                  <h2 class="clientBill">Client Bill</h2>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Cost (CHF)</th>
+                        <th scope="col">Cost (ETH)</th>
+                        <th scope="col">Is payed</th>
+                      </tr>
+                    </thead>
+                    <tbody id="clientBillResult">
+                    </tbody>
+                  </table>
+                </div>
+                <button type="submit" class="btn btn-primary">Show Client Bill</button>
+                <hr />
+              </form>
+            </div>
 
             <div id="contentAddBill">
-
-
               <form onSubmit="App.addBill(); return false;">
                 <div class="form-group">
                   <h2>Add a new bill</h2>
@@ -148,7 +171,6 @@
             <hr>
           </div>
         </div>
-      </div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
