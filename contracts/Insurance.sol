@@ -89,7 +89,7 @@ contract Insurance {
       previousState = address(this).balance - msg.value;
 
 
-      uint rest = (clientAccounts[msg.sender].count+ownerToBills[msg.sender][_billId].cost) - clientAccounts[msg.sender].franchise;
+      uint rest = (clientAccounts[msg.sender].count + ownerToBills[msg.sender][_billId].cost) - clientAccounts[msg.sender].franchise;
       uint clientToPay = ownerToBills[msg.sender][_billId].cost - rest;
 
       //Insurance  gives 90 % to the client address client and the client must pay 10 % for the the doctor
@@ -102,7 +102,6 @@ contract Insurance {
 
         ownerToBills[msg.sender][_billId].payByClient = (ownerToBills[msg.sender][_billId].cost * 10) / 100;
         ownerToBills[msg.sender][_billId].payByInsurance = (ownerToBills[msg.sender][_billId].cost * 90) / 100;
-
 
         //Client pay to doctor 90% from insurance + 10% from himself
         doctor.transfer(msg.value);
@@ -133,10 +132,10 @@ contract Insurance {
         doctor.transfer(msg.value);
       }
 
-
       ownerToBills[msg.sender][_billId].isPayed = true;
 
       clients[clientAccounts[msg.sender].id] = clientAccounts[msg.sender];
+
       //trigger billEvent
       emit PayedEvent(_billId);
     }
@@ -145,7 +144,7 @@ contract Insurance {
       createBill(_address, _name, _cost);
     }
 
-    function getContractBalance() external view returns(uint) {
+    function getContractBalance() external view returns (uint) {
       return address(this).balance;
     }
 

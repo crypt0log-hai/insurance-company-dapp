@@ -66,13 +66,9 @@ App = {
   render: function() {
     var insuranceInstance;
 
-    var contentClient = $("#contentClient");
-    var contentCreateClient = $("#contentCreateClient");
-    var contentBillList = $("#contentBillList");
-    var contentClientPay = $("#contentClientPay");
-    var contentAddBill = $("#contentAddBill");
-    var contentClientList = $("#contentClientList");
-    var contentDoctorBill = $("#contentDoctorBill");
+    var insurerPage = $("#insurerPage");
+    var doctorPage = $("#doctorPage");
+    var clientPage = $("#clientPage");
 
 
     loader.show();
@@ -82,7 +78,7 @@ App = {
     web3.eth.getCoinbase(function(err, account) {
       if(err === null) {
         App.account = account;
-        $("#accountAddress").html("Your account -> " + account);
+        $("#accountAddress").html(account);
         App.getBalance();
 
         console.log(App.account);
@@ -90,11 +86,8 @@ App = {
           // render for owner
           console.log("account -> owner");
           $('#title').html("Welcome Insurer");
-          contentBillList.hide();
-          contentClientPay.hide();
-          contentAddBill.hide();
-          contentClient.hide();
-          contentDoctorBill.hide();
+          doctorPage.hide();
+          clientPage.hide();
 
           App.renderOwner();
 
@@ -102,25 +95,18 @@ App = {
           // render for the doctor
           console.log("Account -> doctor");
           $('#title').html("Welcome Doctor")
-          contentClient.hide();
-          contentCreateClient.hide();
-          contentBillList.hide();
-          contentClientPay.hide();
-          contentClientList.hide();
+
+          insurerPage.hide();
+          clientPage.hide();
 
           App.renderDoctor();
-
-
-
 
         } else {
           // render for the client
           console.log("Account -> client");
           $('#title').html("Welcome Insured");
-          contentCreateClient.hide();
-          contentAddBill.hide();
-          contentClientList.hide();
-          contentDoctorBill.hide();
+          doctorPage.hide();
+          insurerPage.hide();
 
           App.renderClient();
         }
@@ -142,11 +128,11 @@ App = {
       listClientResult.empty();
 
       insuranceInstance.getPreviousState().then(function(previousState) {
-        $("#previousWallet").html("previous contract Wallet --> " + web3.fromWei(previousState, 'ether') + " ETH");
+        $("#previousWallet").html(web3.fromWei(previousState, 'ether') + " ETH");
       });
 
       insuranceInstance.getContractBalance().then(function(balance) {
-        $("#contractWallet").html("Current contract Wallet --> " + web3.fromWei(balance, 'ether') + " ETH");
+        $("#contractWallet").html(web3.fromWei(balance, 'ether') + " ETH");
       });
 
       for (var i = 0; i < clientCount; i++) {
@@ -364,7 +350,7 @@ App = {
         web3.eth.getBalance(App.account, function(error, wei) {
           if (!error) {
             var balance = web3.fromWei(wei, 'ether');
-            $("#accountWallet").html("Your wallet -> " + balance.toFixed(2) + " ETH");
+            $("#accountWallet").html(balance.toFixed(2) + " ETH");
           }
         })
       ;
@@ -373,7 +359,8 @@ App = {
     };
   },
 
-  showClientBill() {
+  showClientBill: function() {
+    console.log("test show");
     var clientAddress = $("#clientSelect").val();
 
     var clientBillResult = $("#clientBillResult");
