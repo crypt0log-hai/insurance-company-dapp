@@ -1,16 +1,14 @@
 pragma solidity ^0.4.24;
+import "./Safemath.sol";
 
-contract Ownable {
-  address owner;
+import "./Ownable.sol";
 
-  modifier onlyOwnbale {
-    require(msg.sender == owner);
-    _;
-  }
-}
+contract Insurance is Ownable {
 
-contract Insurance {
 
+    using SafeMath for uint256;
+    using SafeMath32 for uint32;
+    using SafeMath16 for uint16;
 
     event AddedBill(uint billId, string name, uint cost, bool isPayed);
     event PayedEvent(uint indexed billId);
@@ -61,7 +59,8 @@ contract Insurance {
 
     function createClient(address _address, string _name, uint _franchise) public {
         uint id = ownerClientCount[owner];
-        ownerClientCount[owner]++;
+        //ownerClientCount[owner]++;
+        ownerClientCount[owner] = ownerClientCount[owner].add(1);
         clientAccounts[_address] = Client(id, _name, _franchise, 0, false);
         clients.push(clientAccounts[_address]);
         clientToAddress[id] = _address;
@@ -69,7 +68,8 @@ contract Insurance {
 
     function createBill(address _address, string _name, uint _cost ) private  {
         uint id = clientBillCount[_address];
-        clientBillCount[_address]++;
+        //clientBillCount[_address]++;
+        clientBillCount[_address] = clientBillCount[_address].add(1);
         ownerToBills[_address].push(Bill(id, _name, _cost, false, 0, 0, _address, doctor));
 
         emit AddedBill(id, _name, _cost, false);
@@ -85,6 +85,10 @@ contract Insurance {
 
       //Verify that the bill is unpayed
       require(ownerToBills[msg.sender][_billId].isPayed == false);
+
+      //require the bank has can pay 90%
+      // require that the client can pay 10%
+      //separate, the insurance pay give to doctor 90% and client give 10% to the doctor
 
       previousState = address(this).balance - msg.value;
 
