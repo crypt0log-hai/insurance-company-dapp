@@ -1,27 +1,25 @@
 pragma solidity ^0.4.24;
 import "./Safemath.sol";
-
+import "./ERC20.sol";
 import "./Ownable.sol";
 
 contract Insurance is Ownable {
 
 
     using SafeMath for uint256;
-    using SafeMath32 for uint32;
-    using SafeMath16 for uint16;
 
     event AddedBill(uint billId, string name, uint cost, bool isPayed);
     event PayedEvent(uint indexed billId);
 
-    address owner;
     address doctor;
     uint previousState;
+
 
     struct Client {
         uint id;
         string name;
         uint franchise;
-        uint count; //Decompte
+        uint amount; //Decompte
         bool isReached;
     }
 
@@ -34,6 +32,10 @@ contract Insurance is Ownable {
         uint payByClient;
         address to;
         address from;
+    }
+    modifier onlyDoctor() {
+      if (msg.sender == doctor)
+        _;
     }
 
 
@@ -49,15 +51,17 @@ contract Insurance is Ownable {
 
 
     mapping(address => uint) public ownerClientCount;
+    
     Client[] public clients;
 
     constructor(address _doctor) public payable {
-        owner = msg.sender;
         doctor = _doctor;
+        createClient(0x89619B2cd82f27487159A4f3Fa497F8394C41955, "Test1", (4.37 *  1 ether));
+        createClient(0xA3785455b8Ee4debF641B66DBACE4E8Fd5a5b17F, "Test2", (4.37 *  1 ether));
         previousState = msg.value;
     }
 
-    function createClient(address _address, string _name, uint _franchise) public {
+    function createClient(address _address, string _name, uint _franchise) public onlyOwner {
         uint id = ownerClientCount[owner];
         //ownerClientCount[owner]++;
         ownerClientCount[owner] = ownerClientCount[owner].add(1);
@@ -93,13 +97,13 @@ contract Insurance is Ownable {
       previousState = address(this).balance - msg.value;
 
 
-      uint rest = (clientAccounts[msg.sender].count + ownerToBills[msg.sender][_billId].cost) - clientAccounts[msg.sender].franchise;
+      uint rest = (clientAccounts[msg.sender].amount + ownerToBills[msg.sender][_billId].cost) - clientAccounts[msg.sender].franchise;
       uint clientToPay = ownerToBills[msg.sender][_billId].cost - rest;
 
       //Insurance  gives 90 % to the client address client and the client must pay 10 % for the the doctor
       if(clientAccounts[msg.sender].isReached == true)
       {
-        clientAccounts[msg.sender].count += (ownerToBills[msg.sender][_billId].cost * 10) / 100;
+        clientAccounts[msg.sender].amount += (ownerToBills[msg.sender][_billId].cost * 10) / 100;
 
         //Insurance transfer to client 90% of the bill cost
         (ownerToBills[msg.sender][_billId].to).transfer((ownerToBills[msg.sender][_billId].cost * 90) / 100);
@@ -112,8 +116,8 @@ contract Insurance is Ownable {
       }
 
       //Insurance pay just the 90 % of the cost rest
-      if((clientAccounts[msg.sender].count+ownerToBills[msg.sender][_billId].cost) >= clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].isReached == false){
-        clientAccounts[msg.sender].count += clientToPay + ((rest*10)/100);
+      if((clientAccounts[msg.sender].amount+ownerToBills[msg.sender][_billId].cost) >= clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].isReached == false){
+        clientAccounts[msg.sender].amount += clientToPay + ((rest*10)/100);
         clientAccounts[msg.sender].isReached = true;
 
         ownerToBills[msg.sender][_billId].payByClient = clientToPay + ((rest*10)/100);
@@ -127,8 +131,8 @@ contract Insurance is Ownable {
       }
 
       //insurance pay nothing
-      if(clientAccounts[msg.sender].count < clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].count >= 0) {
-        clientAccounts[msg.sender].count = clientAccounts[msg.sender].count + ownerToBills[msg.sender][_billId].cost;
+      if(clientAccounts[msg.sender].amount < clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].amount >= 0) {
+        clientAccounts[msg.sender].amount = clientAccounts[msg.sender].amount + ownerToBills[msg.sender][_billId].cost;
 
         ownerToBills[msg.sender][_billId].payByClient = msg.value;
         ownerToBills[msg.sender][_billId].payByInsurance = 0;
@@ -144,7 +148,7 @@ contract Insurance is Ownable {
       emit PayedEvent(_billId);
     }
 
-    function addBill(address _address, string _name, uint _cost) public {
+    function addBill(address _address, string _name, uint _cost) public onlyDoctor{
       createBill(_address, _name, _cost);
     }
 
@@ -156,5 +160,8 @@ contract Insurance is Ownable {
       return previousState;
     }
 
+    function setDoctor(address _address) public onlyOwner {
+      doctor = _address;
+    }
 
 }

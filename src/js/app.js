@@ -123,7 +123,6 @@ App = {
       insuranceInstance = instance;
       return insuranceInstance.ownerClientCount(App.account);
     }).then(function(clientCount) {
-      console.log("test");
       var listClientResult = $("#listClientResult");
       listClientResult.empty();
 
@@ -137,20 +136,14 @@ App = {
 
       for (var i = 0; i < clientCount; i++) {
         insuranceInstance.clients(i).then(function(client){
-          console.log(client);
         var id = client[0];
         var name = client[1];
-        console.log(name);
         var franchise = Number((web3.fromWei(client[2], 'ether').toFixed(6)));
         var count = Number((web3.fromWei(client[3], 'ether').toFixed(6)));
-        console.log("count ->" + count);
         var franchiseCHF = Number((franchise * etherToCHF).toFixed(0));
         var countCHF = Number((count * etherToCHF).toFixed(2));
 
-
         var isReached = client[4];
-
-        console.log(isReached);
 
         if(isReached == false){
           var clientTemplate = "<tr><td id='idClient'>"  + id + '</td><td id="name">' + name + '</td><td id="franchise">' + franchiseCHF + '</td><td id="franchiseCHF">' + franchise + '</td><td id="count">' + countCHF +'</td><td id="countCHF">'+ count + "</td><td style='color:#FF0000';>Unreached</td></tr>";
@@ -185,7 +178,6 @@ App = {
         var name = client[1];
         insuranceInstance.clientToAddress(id).then(function(address)
         {
-          console.log(address);
           var billOption = "<option value='" + address + "'>" + name + "</ option>"
           clientSelect.append(billOption);
         });
@@ -199,13 +191,11 @@ App = {
 
 
   renderClient: function(){
-    console.log("test");
     App.contracts.Insurance.deployed().then(function(instance) {
       insuranceInstance = instance;
       return insuranceInstance.clientAccounts(App.account);
     }).then(function(client) {
-      console.log(client);
-                    var clientResult = $("#clientResult");
+      var clientResult = $("#clientResult");
       clientResult.empty();
 
       var name = client[1];
