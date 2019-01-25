@@ -17,142 +17,203 @@
           <hr/>
           <br/>
           <div id="loader">
-            <center><img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif"></center>
+            <center><img id="loader" src="./images/loader.gif"></center>
             <p class="text-center">Loading...</p>
           </div>
           <div id="content" style="display: none;" >
-            <p id="accountAddress"class="text-center"> </p> <br>
-            <p id="accountWallet" class="text-center" style="color:#0000FF";></p><br>
-            <p id="contractWallet" class="text-center" style="color:#0000FF";></p><br>
-            <div class="jumbotron">
-                <h1 id="title"></h1>
-            </div>
-
-            <div id="contentClient" >
-              <h2>Client Account</h2>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Franchise (CHF)</th>
-                    <th scope="col">Franchise (ETH)</th>
-                    <th scope="col">Décompte (CHF)</th>
-                    <th scope="col">Décompte (ETH)</th>
-                  </tr>
-                </thead>
-                <tbody id="clientResult">
-                </tbody>
-              </table>
-            </div>
-
-            <hr>
-
-            <div id="contentClientList">
-              <h2>Liste of Client</h2>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Franchise (CHF)</th>
-                    <th scope="col">Franchise (ETH)</th>
-                    <th scope="col">Décompte (CHF)</th>
-                    <th scope="col">Décompte (ETH)</th>
-                    <th scope="col">Is reached</th>
-                  </tr>
-                </thead>
-                <tbody id="listClientResult">
-                </tbody>
-              </table>
-              </div>
-            </div>
-
-            <div id="contentCreateClient">
-              <form onSubmit="App.createClient(); return false;">
-                <div class="form-group">
-                  <h2>Create a client</h2>
-                  <label for="clientAddress">Client Adress : </label><br>
-                  <input id="clientAddress" type="text" name="" value="">
-                  <hr>
-
-                  <label for="clientName">Client Name : </label><br>
-                  <input id="clientName" type="text" name="" value="">
-                  <hr>
-                  <label for="franchiseSelect">Franchise amount</label>
-                  <select class="form-control" id="franchiseSelect">
-                    <option value="500">500.-</option>
-                    <option value="1000">1000.-</option>
-                    <option value="1500">1500.-</option>
-                    <option value="2000">2000.-</option>
-                    <option value="2500">2500.-</option>
-                  </select>
-                  <hr>
-                  <button type="submit" class="btn btn-primary">Create</button>
+                <div class="jumbotron">
+                    <h1 id="title"></h1>
                 </div>
-            </div>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Your account address</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <td><p id="accountAddress"> </p></td>
+                    </tbody>
+                </table>
 
-            <div id="contentBillList">
-              </form>
-              <h2>Client bills</h2>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Cost (CHF)</th>
-                    <th scope="col">Cost (ETH)</th>
-                    <th scope="col">Is payed</th>
-                  </tr>
-                </thead>
-                <tbody id="billResults">
-                </tbody>
-              </table>
-              <hr/>
-            </div>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Your cryptowallet</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <td><p id="accountWallet" style="color:#0000FF";></p></td>
+                    </tbody>
+                </table>
 
-            <div id="contentClientPay">
-              <form onSubmit="App.pay(); return false;">
-                <div class="form-group">
-                  <h2>Pay a bill</h2>
-                  <label for="billSelect">Select a bill to pay</label>
-                  <select class="form-control" id="billSelect">
-                  </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Pay</button>
-                <hr />
-              </form>
-            </div>
+                <hr>
+
+                <!--Content of the insurer page -->
+                <div id="insurerPage">
+                  <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Current Contract wallet</th>
+                          <th scope="col">Previous Contract wallet</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <td><p id="contractWallet" style="color:#0000FF";></p></td>
+                        <td><p id="previousWallet" style="color:#0000FF";></p></td>
+                      </tbody>
+                  </table>
+
+                  <div id="contentClientList">
+                    <h2>Liste of Client</h2>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Excess (CHF)</th>
+                          <th scope="col">Excess (ETH)</th>
+                          <th scope="col">Amount (CHF)</th>
+                          <th scope="col">Amount (ETH)</th>
+                          <th scope="col">Is reached</th>
+                        </tr>
+                      </thead>
+                      <tbody id="listClientResult">
+                      </tbody>
+                    </table>
+                    </div>
+
+                    <hr>
+                    <div id="contentCreateClient">
+                      <form onSubmit="App.createClient(); return false;">
+                        <div class="form-group">
+                          <h2>Create a client</h2>
+                          <label for="clientAddress">Client Adress : </label><br>
+                          <input id="clientAddress" type="text" name="" value="">
+                          <hr>
+
+                          <label for="clientName">Client Name : </label><br>
+                          <input id="clientName" type="text" name="" value="">
+                          <hr>
+                          <label for="franchiseSelect">Excess amount</label>
+                          <select class="form-control" id="franchiseSelect">
+                            <option value="500">500.-</option>
+                            <option value="1000">1000.-</option>
+                            <option value="1500">1500.-</option>
+                            <option value="2000">2000.-</option>
+                            <option value="2500">2500.-</option>
+                          </select>
+                          <hr>
+                          <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
 
 
-            <div id="contentAddBill">
+                <!--Content of the doctor page-->
+                <div id="doctorPage">
+                  <h2>Your patient</h2>
 
-
-              <form onSubmit="App.addBill(); return false;">
-                <div class="form-group">
-                  <h2>Add a new bill</h2>
-
-                  <label for="clientSelect">Select your patient</label>
-                  <select id="clientSelect" class="form-control" >
-                  </select>
                   <br>
-                  <label for="billDate">Bill Date :</label>
-                  <input id="billDate" type="date" name="anniversaire">
-                  <hr>
-                  <label for="billCost">Bill cost (CHF) :</label>
-                  <input id="billCost" type="text" name="costname" value="">
+                  <div id="contentDoctorBill">
+                        <label for="clientSelect">Select your patient</label>
+                        <select id="clientSelect" class="form-control" >
+                        </select>
+                        <h3 class="clientBill">Patient Bills</h3>
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Date</th>
+                              <th scope="col">Cost (CHF)</th>
+                              <th scope="col">Cost (ETH)</th>
+                              <th scope="col">Is payed</th>
+                            </tr>
+                          </thead>
+                          <tbody id="clientBillResult">
+                          </tbody>
+                        </table>
+                        <button onclick="App.showClientBill()" class="btn btn-secondary">Show Patient Bill</button>
+                      <hr />
+                  </div>
+
+                  <div id="contentAddBill">
+                    <form onSubmit="App.addBill(); return false;">
+                      <div class="form-group">
+                        <h3>Add a new bill</h3>
+                        <label for="billDate">Bill Date :</label>
+                        <input id="billDate" type="date" name="anniversaire">
+                        <hr>
+                        <label for="billCost">Bill cost (CHF) :</label>
+                        <input id="billCost" type="text" name="costname" value="">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Add</button>
+                      <hr />
+                    </form>
+                  </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Add</button>
-                <hr />
-              </form>
-            </div>
-            <hr>
+
+                <!--Content for client page-->
+                <div id="clientPage">
+                  <div id="contentClient" >
+                    <h2>Your Account</h2>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Name</th>
+                          <th scope="col">Excess (CHF)</th>
+                          <th scope="col">Excess (ETH)</th>
+                          <th scope="col">Amount (CHF)</th>
+                          <th scope="col">Amount (ETH)</th>
+                        </tr>
+                      </thead>
+                      <tbody id="clientResult">
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <hr>
+                  <div id="contentBillList">
+                    </form>
+                    <h2>Your bills</h2>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Cost (CHF)</th>
+                          <th scope="col">Cost (ETH)</th>
+                          <th scope="col">Is payed</th>
+                          <th scope="col">Payed by you</th>
+                          <th scope="col">Payed by insurance</th>
+                        </tr>
+                      </thead>
+                      <tbody id="billResults">
+                      </tbody>
+                    </table>
+                  </div>
+                  <hr>
+                  <div id="contentClientPay">
+                    <form onSubmit="App.pay(); return false;">
+                      <div class="form-group">
+                        <h2>Pay a bill</h2>
+                        <label for="billSelect">Select a bill to pay</label>
+                        <select class="form-control" id="billSelect">
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Pay</button>
+                      <hr />
+                    </form>
+                  </div>
+                </div>
+
+
           </div>
         </div>
-      </div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/jquery-2.1.1.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
