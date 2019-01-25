@@ -1,7 +1,8 @@
-var chfToEther = 0.010821339681852614;
+// 1 chf =
+var chfToEther = 0.008610297916307904;
 
-// 1 ether = 116.63
-var etherToCHF = 92.4;
+// 1 ether = 
+var etherToCHF = 116.14;
 
 var loader = $("#loader");
 var content = $("#content");

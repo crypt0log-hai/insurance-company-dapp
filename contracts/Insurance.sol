@@ -40,16 +40,17 @@ contract Insurance is Ownable {
 
 
 
-    //Table of balance
-    mapping(address => uint) public balanceOf;
+    // Table of client address
     mapping (uint => address) public clientToAddress;
+    // table of bill id. return a client
     mapping (uint => address) public billToOwner;
+    // Table of client
     mapping (address => Client) public clientAccounts;
+    // Table of the count of client bill
     mapping (address => uint) public clientBillCount;
-
+    // Each client get a table of bill
     mapping (address => Bill[]) public ownerToBills;
-
-
+    // Get the total of client for the owner address
     mapping(address => uint) public ownerClientCount;
 
     Client[] public clients;
@@ -97,42 +98,42 @@ contract Insurance is Ownable {
       previousState = address(this).balance - msg.value;
 
 
-      uint rest = (clientAccounts[msg.sender].amount.add(ownerToBills[msg.sender][_billId].cost)).sub(clientAccounts[msg.sender].franchise);
-      uint clientToPay = ownerToBills[msg.sender][_billId].cost.sub(rest);
+      uint rest = (clientAccounts[msg.sender].amount + ownerToBills[msg.sender][_billId].cost) - uint(clientAccounts[msg.sender].franchise);
+      uint clientToPay = ownerToBills[msg.sender][_billId].cost - rest;
 
       //Insurance  gives 90 % to the client address client and the client must pay 10 % for the the doctor
       if(clientAccounts[msg.sender].isReached == true)
       {
-        clientAccounts[msg.sender].amount = clientAccounts[msg.sender].amount.add((ownerToBills[msg.sender][_billId].cost.mul(10)).div(100));
+        clientAccounts[msg.sender].amount += (ownerToBills[msg.sender][_billId].cost * 10) / 100;
 
         //Insurance transfer to client 90% of the bill cost
-        (ownerToBills[msg.sender][_billId].to).transfer((ownerToBills[msg.sender][_billId].cost.mul(90)).div(100));
+        (ownerToBills[msg.sender][_billId].to).transfer((ownerToBills[msg.sender][_billId].cost * 90) / 100);
 
-        ownerToBills[msg.sender][_billId].payByClient = (ownerToBills[msg.sender][_billId].cost.mul(10)).div(100);
-        ownerToBills[msg.sender][_billId].payByInsurance = (ownerToBills[msg.sender][_billId].cost.mul(90)).div(100);
+        ownerToBills[msg.sender][_billId].payByClient = (ownerToBills[msg.sender][_billId].cost * 10) / 100;
+        ownerToBills[msg.sender][_billId].payByInsurance = (ownerToBills[msg.sender][_billId].cost * 90) / 100;
 
         //Client pay to doctor 90% from insurance + 10% from himself
         doctor.transfer(msg.value);
       }
 
       //Insurance pay just the 90 % of the cost rest
-      if((clientAccounts[msg.sender].amount+ownerToBills[msg.sender][_billId].cost) >= clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].isReached == false){
-        clientAccounts[msg.sender].amount = clientAccounts[msg.sender].amount.add(clientToPay.add((rest.mul(10)).div(100)));
+      if((clientAccounts[msg.sender].amount+ownerToBills[msg.sender][_billId].cost) >= uint(clientAccounts[msg.sender].franchise) && clientAccounts[msg.sender].isReached == false){
+        clientAccounts[msg.sender].amount += clientToPay + ((rest*10)/100);
         clientAccounts[msg.sender].isReached = true;
 
-        ownerToBills[msg.sender][_billId].payByClient = clientToPay.add((rest.mul(10)).div(100));
-        ownerToBills[msg.sender][_billId].payByInsurance = (rest.mul(90)).div(100);
+        ownerToBills[msg.sender][_billId].payByClient = clientToPay + ((rest*10)/100);
+        ownerToBills[msg.sender][_billId].payByInsurance = (rest * 90) / 100;
 
         //Insurance transfer 90% of the rest bill to the client
-        (ownerToBills[msg.sender][_billId].to).transfer((rest.mul(90)).div(100));
+        (ownerToBills[msg.sender][_billId].to).transfer((rest * 90) / 100);
 
         //Client pay to doctor 90% of the rest from insurance + 10% from rest himself
         doctor.transfer(msg.value);
       }
 
       //insurance pay nothing
-      if(clientAccounts[msg.sender].amount < clientAccounts[msg.sender].franchise && clientAccounts[msg.sender].amount >= 0) {
-        clientAccounts[msg.sender].amount = clientAccounts[msg.sender].amount.add(ownerToBills[msg.sender][_billId].cost);
+      if(clientAccounts[msg.sender].amount < uint(clientAccounts[msg.sender].franchise) && clientAccounts[msg.sender].amount >= 0) {
+        clientAccounts[msg.sender].amount = clientAccounts[msg.sender].amount + ownerToBills[msg.sender][_billId].cost;
 
         ownerToBills[msg.sender][_billId].payByClient = msg.value;
         ownerToBills[msg.sender][_billId].payByInsurance = 0;
